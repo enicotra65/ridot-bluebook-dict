@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: ridot-bluebook
+    env: docker
+    plan: free
+    autoDeploy: true
+    dockerContext: .
+    dockerfilePath: Dockerfile
+    buildCommand: ""
+    startCommand: ""

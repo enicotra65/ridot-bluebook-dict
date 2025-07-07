@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+.env
+*.zip
+.cache/
+node_modules/
+.git/
+.vscode/
+pdfs/
+cache/

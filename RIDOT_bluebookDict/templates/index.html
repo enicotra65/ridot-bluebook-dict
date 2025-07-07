@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RIDOT Bluebook Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="scroll-container">
+    <div class="scrolling-bg"></div>
+    <div class="scrolling-bg"></div>
+  </div>
+
+  <div class="container">
+    <div class="form-box">
+      <h1 class="form-title">RIDOT Bluebook PDF Viewer</h1>
+      <form id="bluebookForm">
+        <div class="form-group">
+          <label for="pdfSelect">Select a Bluebook PDF:</label>
+          <select id="pdfSelect" name="pdf" class="custom-select">
+            <option value="" disabled selected>Select a PDF</option>
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="query-label">Query by:</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="queryType" value="part" disabled> Part</label>
+            <label class="radio-label"><input type="radio" name="queryType" value="section" disabled> Section</label>
+            <label class="radio-label"><input type="radio" name="queryType" value="subsection" disabled> Subsection</label>
+          </div>
+        </div>
+
+        <div id="dynamicInputs"></div>
+
+        <button type="submit">Open PDF</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='form.js') }}"></script>
+</body>
+</html>
+
+
+
+
