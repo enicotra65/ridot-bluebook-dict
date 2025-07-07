@@ -93,6 +93,15 @@ def build_cache():
     start = time.time()
     print("[Cache] Building Bluebook cache...")
 
+    if not os.path.exists(PDF_FOLDER):
+        print(f"[!] PDF folder not found: {PDF_FOLDER}")
+        return {}, {}
+
+    pdf_files = [f for f in os.listdir(PDF_FOLDER) if f.endswith(".pdf")]
+    if not pdf_files:
+        print("[!] No PDF files found. Skipping cache build.")
+        return {}, {}
+
     for fname in os.listdir(PDF_FOLDER):
         if not fname.endswith(".pdf"):
             continue
