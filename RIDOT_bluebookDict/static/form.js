@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const fileParam = encodeURIComponent(`/pdfs/${pdf}`);
-    window.open(`/static/pdfjs/viewer.html?file=/pdfs/${pdf}&page=${page}`, "_blank");
+    window.open(`/static/pdfjs/viewer.html?file=/static/pdfs/${pdf}#page=${page}`, "_blank");
 
   });
 });
