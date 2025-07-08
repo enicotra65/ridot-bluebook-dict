@@ -33,7 +33,26 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     <link rel="stylesheet" href="viewer.css">
 
-  <script src="viewer.mjs" type="module"></script>
+<script src="viewer.mjs" type="module"></script>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const file = urlParams.get("file");
+    const page = parseInt(urlParams.get("page")) || 1;
+
+    // Set the default PDF file if passed in the URL
+    if (file) {
+      DEFAULT_URL = decodeURIComponent(file);
+    }
+
+    // Wait until pages are loaded, then jump to the desired page
+    window.addEventListener("pagesloaded", () => {
+      if (page && window.PDFViewerApplication) {
+        PDFViewerApplication.page = page;
+      }
+    });
+</script>
+
   </head>
 
   <body tabindex="0">
