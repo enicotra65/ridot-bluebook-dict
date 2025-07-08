@@ -212,17 +212,36 @@ def get_pdfs():
 def serve_pdf(filename):
     return send_from_directory(PDF_FOLDER, filename)
 
+@blueprint.route("/viewer")
+def viewer():
+    pdf_url = request.args.get("file")
+    page = request.args.get("page", default=1, type=int)
+    if not pdf_url:
+        return "Missing PDF URL", 400
+    return render_template("viewer.html", pdf_url=pdf_url, page=page)
+
+
 @blueprint.route("/view_pdf/<filename>")
 def view_pdf(filename):
     page = request.args.get("page", type=int)
     if not page or filename not in pdf_display_names:
         return "Invalid request.", 400
+
     pdf_path = os.path.join(PDF_FOLDER, filename)
     if not os.path.exists(pdf_path):
         return "PDF not found.", 404
-    rel_path = os.path.relpath(pdf_path, BASE_DIR).replace("\\", "/")
+
+    # Generate the relative file path for the viewer to open
+    rel_path = f"/pdfs/{filename}"
     return f'''
-    <html><head><meta http-equiv="refresh" content="0; url=/{rel_path}#page={page}" /></head>
-    <body><p>Redirecting to page {page} of {filename}...
-    <a href="/{rel_path}#page={page}">Click here if not redirected.</a></p></body></html>
+    <html>
+      <head>
+        <meta http-equiv="refresh" content="0; url=/static/pdfjs/viewer.html?file={rel_path}&page={page}" />
+      </head>
+      <body>
+        <p>Redirecting to PDF Viewer...<br>
+        <a href="/static/pdfjs/viewer.html?file={rel_path}&page={page}">Click here if not redirected.</a></p>
+      </body>
+    </html>
     '''
+
