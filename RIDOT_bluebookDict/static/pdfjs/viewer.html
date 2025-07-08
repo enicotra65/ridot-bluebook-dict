@@ -1,25 +1,4 @@
 ﻿<!DOCTYPE html>
-<!--
-Copyright 2012 Mozilla Foundation
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-Adobe CMap resources are covered by their own copyright but the same license:
-
-    Copyright 1990-2015 Adobe Systems Incorporated.
-
-See https://github.com/adobe-type-tools/cmap-resources
--->
 <html dir="ltr" mozdisallowselectionprint>
   <head>
     <meta charset="utf-8">
@@ -27,31 +6,35 @@ See https://github.com/adobe-type-tools/cmap-resources
     <meta name="google" content="notranslate">
     <title>PDF.js viewer</title>
 
-<!-- This snippet is used in production (included from viewer.html) -->
-<link rel="resource" type="application/l10n" href="locale/locale.json">
-<script src="./build/pdf.mjs" type="module"></script>
+    <!-- Localization -->
+    <link rel="resource" type="application/l10n" href="locale/locale.json">
 
+    <!-- PDF.js core and viewer logic -->
+    <script src="./build/pdf.mjs" type="module"></script>
     <link rel="stylesheet" href="viewer.css">
+    <script src="viewer.mjs" type="module"></script>
 
-<script src="viewer.mjs" type="module"></script>
+    <!-- Load URL file + page -->
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const file = urlParams.get("file");
+      const page = parseInt(urlParams.get("page")) || 1;
 
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const file = urlParams.get("file");
-    const page = parseInt(urlParams.get("page")) || 1;
-
-    // Set the default PDF file if passed in the URL
-    if (file) {
-      DEFAULT_URL = decodeURIComponent(file);
-    }
-
-    // Wait until pages are loaded, then jump to the desired page
-    window.addEventListener("pagesloaded", () => {
-      if (page && window.PDFViewerApplication) {
-        PDFViewerApplication.page = page;
+      // Prepend origin to fix mobile viewer issue
+      if (file) {
+        DEFAULT_URL = window.location.origin + decodeURIComponent(file);
+        console.log("Loading PDF:", DEFAULT_URL);
       }
-    });
-</script>
+
+      // Wait until pages load to jump to the right page
+      window.addEventListener("pagesloaded", () => {
+        console.log("Pages loaded. Navigating to page:", page);
+        if (page && window.PDFViewerApplication) {
+          PDFViewerApplication.page = page;
+        }
+      });
+    </script>
+
 
   </head>
 
