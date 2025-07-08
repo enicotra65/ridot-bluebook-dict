@@ -88,23 +88,45 @@ def format_display_name(filename):
         return filename
 
 def build_cache():
+    import json
+    import urllib.request
+
     full_cache = {}
     display_names = {}
     start = time.time()
     print("[Cache] Building Bluebook cache...")
 
-    if not os.path.exists(PDF_FOLDER):
-        print(f"[!] PDF folder not found: {PDF_FOLDER}")
-        return {}, {}
+    # Ensure PDF folder exists
+    os.makedirs(PDF_FOLDER, exist_ok=True)
 
+    # === Load bluebooks.json ===
+    json_path = os.path.join(BASE_DIR, "..", "bluebooks.json")
+    if os.path.exists(json_path):
+        with open(json_path, "r") as f:
+            bluebook_data = json.load(f)
+        urls = bluebook_data.get("urls", {})
+    else:
+        print("[!] bluebooks.json not found. Skipping PDF downloads.")
+        urls = {}
+
+    # === Download any missing PDFs ===
+    for fname, url in urls.items():
+        local_path = os.path.join(PDF_FOLDER, fname)
+        if not os.path.exists(local_path):
+            try:
+                print(f"[↓] Downloading {fname}...")
+                urllib.request.urlretrieve(url, local_path)
+                print(f"[✓] Saved {fname}")
+            except Exception as e:
+                print(f"[✗] Failed to download {fname}: {e}")
+
+    # Check if any PDFs exist
     pdf_files = [f for f in os.listdir(PDF_FOLDER) if f.endswith(".pdf")]
     if not pdf_files:
         print("[!] No PDF files found. Skipping cache build.")
         return {}, {}
 
-    for fname in os.listdir(PDF_FOLDER):
-        if not fname.endswith(".pdf"):
-            continue
+    for fname in pdf_files:
         display_names[fname] = format_display_name(fname)
         pdf_path = os.path.join(PDF_FOLDER, fname)
         print(f"\n[→] Processing {fname}...")
@@ -132,7 +154,7 @@ def build_cache():
                     sec_obj["subsections"] = subsections
                     structured["sections"][part["title"]].append(sec_obj)
 
-                # === Hardcoded workaround ===
+                # === Hardcoded workaround for problematic sections ===
                 if part["title"] == "Part M - Materials":
                     print("  [!] Hardcoding SECTION M19 and M20")
                     structured["sections"][part["title"]].append({
@@ -154,6 +176,7 @@ def build_cache():
 
             full_cache[fname] = structured
 
+    # Save cache to disk
     with open(CACHE_PATH, "wb") as f:
         pickle.dump(full_cache, f)
     with open(DISPLAY_NAMES_PATH, "wb") as f:
@@ -161,6 +184,7 @@ def build_cache():
 
     print(f"\n[✓] Cache completed in {round(time.time() - start, 2)} seconds.")
     return full_cache, display_names
+
 
 # === Load or Build Cache ===
 if os.path.exists(CACHE_PATH) and os.path.exists(DISPLAY_NAMES_PATH):
